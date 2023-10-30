@@ -42,34 +42,60 @@ void Bach::Chord::setBass(String bassNote) // B
 	bass = bassNote;
 }
 
-Array<Bach::Note> Bach::Chord::getNotes()
+void Bach::Chord::setInversions(int inversions)
 {
-	Array<Note> notes;
-	return notes;
+    this->inversions = inversions;
+}
+
+OwnedArray<Bach::Note> Bach::Chord::getNotes()
+{
+    OwnedArray<Bach::Note> notes;
+    auto midiNotes = Bach::Chord::getMidiNoteNumbers();
+    for (auto midiNote : midiNotes) {
+        auto note = new Bach::Note(midiNote);
+        notes.add(note);
+    }
+    return notes;
 }
 
 Array<int> Bach::Chord::getMidiNoteNumbers() // [48, 52, 55]
 {
-	Array<int> notes = chordNameToMidiNotes.get(root, type, bass, octave);
+	Array<int> notes = chordNameToMidiNotes.get(root, type, bass, octave, inversions);
 	return notes;
 }
 
 Array<String> Bach::Chord::getPitchClassWithOctaveNotes() // [A3, C4, E4]
 {
-	return {};
+    Array<String> pitchClassWithOctaveNotes;
+    auto notes = getNotes();
+    for (int i = 0; i < notes.size(); i++) {
+        pitchClassWithOctaveNotes.add(notes[i]->getPitchClassWithOctave());
+    }
+    return pitchClassWithOctaveNotes;
 }
 
 Array<String> Bach::Chord::getPitchClassNotes() // [A, C, E]
 {
-	return {"A"};
+    Array<String> pitchClassNotes;
+    auto notes = getNotes();
+    for (int i = 0; i < notes.size(); i++) {
+        pitchClassNotes.add(notes[i]->getPitchClass());
+    }
+	return pitchClassNotes;
 }
 
 Array<int> Bach::Chord::getIntegerPitchClassNotes() // [0, 3, 5, 7]
 {
-	return {0};
+    Array<int> integerPitchClassNotes;
+    auto notes = getNotes();
+    for (int i = 0; i < notes.size(); i++) {
+        integerPitchClassNotes.add(notes[i]->getIntegerPitchClass());
+    }
+    return integerPitchClassNotes;
 }
 
 Array<String> Bach::Chord::getIntervals() // [P1, m3, P5]
 {
 	return {"P1"};
 }
+

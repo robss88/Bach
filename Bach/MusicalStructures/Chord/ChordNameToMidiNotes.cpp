@@ -1,4 +1,4 @@
-﻿/*
+/*
   ==============================================================================
 
     ChordNameToMidiNotes.cpp
@@ -272,12 +272,12 @@ Bach::ChordInfo Bach::ChordNameToMidiNotes::getChordInfo(String chordName)
 	String bass = "C";
 	String root = "C";
 	String type = "";
-	bool hasBassInChordName = false;
 	String chordNameNoSlash;
 	StringArray tokens;
 	tokens.addTokens(chordName, "/", "");
 	chordNameNoSlash = tokens[0];
-	
+    hasBassInChordName = false;
+    
 	//extract bass
 	if (tokens.size() == 2)
 	{
@@ -322,18 +322,31 @@ String Bach::ChordNameToMidiNotes::getChordType(String chordName)
 	return getChordInfo(chordName).type;
 }
 
-Array<int> Bach::ChordNameToMidiNotes::get(String chordRoot, String chordType, String chordBass, int chordOctave)
+Array<int> Bach::ChordNameToMidiNotes::get(String chordRoot, String chordType, String chordBass, int chordOctave, int numInversions)
 {
-	Array<int> midChord;
-	int midRoot = midiUtils.pitchClassAndOctaveToMidiNumber(chordRoot, chordOctave);
-	int midBass = midiUtils.pitchClassAndOctaveToMidiNumber(chordBass, chordOctave);
-	midBass = midRoot > midBass ? midBass - 12 : midBass;
-	Array<String> intervalArray = readChord(chordType);
-	midChord.add(midBass);
-	for (auto i : intervalArray)
-	{
-		jassert(midiUtils.isValidInterval(i));
-		midChord.add(midiUtils.intervalToMidiNoteValue(i) + midRoot);
-	}
-	return midChord;
+    Array<int> midChord;
+    int midRoot = midiUtils.pitchClassAndOctaveToMidiNumber(chordRoot, chordOctave);
+    int midBass = midiUtils.pitchClassAndOctaveToMidiNumber(chordBass, chordOctave) - 12;
+    //    midBass = midRoot > midBass ? midBass - 12 : midBass;
+    Array<String> intervalArray = readChord(chordType);
+
+    // Add chord tones
+    for (auto i : intervalArray)
+    {
+        jassert(midiUtils.isValidInterval(i));
+        midChord.add(midiUtils.intervalToMidiNoteValue(i) + midRoot);
+    }
+
+    // Apply inversions
+    for (int i = 0; i < numInversions; ++i) {
+        int note = midChord.removeAndReturn(0);
+        midChord.add(note + 12);
+    }
+    
+    // Add bass note if it has been specified
+    if (hasBassInChordName) {
+        midChord.insert(0, midBass);
+    }
+
+    return midChord;
 }

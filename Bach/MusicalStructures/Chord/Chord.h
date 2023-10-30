@@ -23,8 +23,9 @@ namespace Bach {
 		void setChord(String chordName); // A#m7/B
 		void setRoot(String rootNote); // A#
 		void setType(String chordType); // m7
-		void setBass(String rootNote); // B
-		Array<Note> getNotes();
+        void setBass(String rootNote); // B
+        void setInversions(int inversions); // B
+		OwnedArray<Note> getNotes();
 		Array<int> getMidiNoteNumbers(); // [48, 52, 55]
 		Array<String> getPitchClassWithOctaveNotes(); // [A3, C4, E4]
 		Array<String> getPitchClassNotes(); // [A, C, E]
@@ -37,7 +38,8 @@ namespace Bach {
 		String root;
 		String type;
 		String bass;
-		int octave;
+        int octave;
+        int inversions = 0;
 		//ChordVoicing voicing;
 	};
 }

@@ -25,8 +25,9 @@ public:
 	String getChordBass(String chordName);
 	String getChordRoot(String chordName);
 	String getChordType(String chordName);
-	Array<int> get(String chordRoot, String chordType, String chordBass, int chordOctave);
+	Array<int> get(String chordRoot, String chordType, String chordBass, int chordOctave, int numInversions);
 private:
+    bool hasBassInChordName = false;
 	MidiUtils midiUtils;
 	Array<String> readChord(String symbol);
 	var c;

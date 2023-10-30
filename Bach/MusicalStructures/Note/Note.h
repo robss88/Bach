@@ -17,6 +17,8 @@
 namespace Bach {
 	class Note {
 	public:
+        StringArray noteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
 		Note(int midi);
 		Note(int midi, int vel);
 		int getMidiNoteNumber(); // 48

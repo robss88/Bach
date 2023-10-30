@@ -43,20 +43,23 @@ void Bach::Note::setVelocity(int vel)
 
 String Bach::Note::getPitchClassWithOctave() // A3
 {
-	return "TODO";
+    int octave = midiNoteNumber / 12 - 1;
+    int pitchClass = midiNoteNumber % 12;
+    return noteNames[pitchClass] + String(octave);
 }
 
 String Bach::Note::getPitchClass() // A
 {
-	return "TODO";
+    int pitchClass = midiNoteNumber % 12;
+    return noteNames[pitchClass];
 }
 
 int Bach::Note::getIntegerPitchClass() // 0
 {
-	return -1;
+    return midiNoteNumber % 12;
 }
 
 int Bach::Note::getOctave() // 4
 {
-	return -1;
+    return midiNoteNumber / 12 - 1;
 }
