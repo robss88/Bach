@@ -96,6 +96,31 @@ Array<int> Bach::Chord::getIntegerPitchClassNotes() // [0, 3, 5, 7]
 
 Array<String> Bach::Chord::getIntervals() // [P1, m3, P5]
 {
-	return {"P1"};
-}
+    Array<String> intervals;
+    auto integerNotes = getIntegerPitchClassNotes();
+    if (integerNotes.size() == 0) return {};
 
+    int rootNote = integerNotes[0];
+    for (int i = 0; i < integerNotes.size(); i++) {
+        int interval = integerNotes[i] - rootNote;
+        String intervalName;
+        switch (interval) {
+            case 0: intervalName = "P1"; break;
+            case 1: intervalName = "m2"; break;
+            case 2: intervalName = "M2"; break;
+            case 3: intervalName = "m3"; break;
+            case 4: intervalName = "M3"; break;
+            case 5: intervalName = "P4"; break;
+            case 6: intervalName = "d5"; break;
+            case 7: intervalName = "P5"; break;
+            case 8: intervalName = "m6"; break;
+            case 9: intervalName = "M6"; break;
+            case 10: intervalName = "m7"; break;
+            case 11: intervalName = "M7"; break;
+            // Add more intervals as needed
+            default: intervalName = "Unknown"; break;
+        }
+        intervals.add(intervalName);
+    }
+    return intervals;
+}
