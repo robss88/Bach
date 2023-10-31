@@ -47,6 +47,16 @@ void Bach::Chord::setInversions(int inversions)
     this->inversions = inversions;
 }
 
+void Bach::Chord::setOctave(int octave)
+{
+    this->octave = octave;
+}
+
+void Bach::Chord::setVoicing(Voicing voicing)
+{
+    this->voicing = voicing;
+}
+
 OwnedArray<Bach::Note> Bach::Chord::getNotes()
 {
     OwnedArray<Bach::Note> notes;
@@ -61,6 +71,8 @@ OwnedArray<Bach::Note> Bach::Chord::getNotes()
 Array<int> Bach::Chord::getMidiNoteNumbers() // [48, 52, 55]
 {
 	Array<int> notes = chordNameToMidiNotes.get(root, type, bass, octave, inversions);
+    //apply voicing if needed
+    notes = getNotesWithCustomVoicing(notes);
 	return notes;
 }
 
@@ -123,4 +135,46 @@ Array<String> Bach::Chord::getIntervals() // [P1, m3, P5]
         intervals.add(intervalName);
     }
     return intervals;
+}
+
+Array<int> Bach::Chord::getNotesWithCustomVoicing(Array<int> notes)
+{
+    Array<int> notesToAdd;
+
+    for (const auto& op : voicing.operations)
+    {
+       if (op.type == "duplicate")
+        {
+            if (op.index < notes.size())
+            {
+                int note = notes[op.index];
+                for (int octave : op.octaves)
+                {
+                    notesToAdd.add(note + (octave * 12));
+                }
+            }
+        }
+    }
+
+    // Handle 'drop' operations
+    for (const auto& op : voicing.operations)
+    {
+        if (op.type == "drop")
+        {
+            // Sort and iterate in reverse to avoid index issues
+            Array<int> sortedDrop = op.drop;
+            sortedDrop.sort();
+            for (int i = sortedDrop.size() - 1; i >= 0; --i)
+            {
+                int index = sortedDrop[i];
+                if (index < notes.size())
+                    notes.remove(index);
+            }
+        }
+    }
+
+    // Now add any notes that need to be added
+    notes.addArray(notesToAdd);
+
+    return notes;
 }

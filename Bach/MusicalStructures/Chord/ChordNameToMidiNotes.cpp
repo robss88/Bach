@@ -347,6 +347,6 @@ Array<int> Bach::ChordNameToMidiNotes::get(String chordRoot, String chordType, S
     if (hasBassInChordName) {
         midChord.insert(0, midBass);
     }
-
+    
     return midChord;
 }
